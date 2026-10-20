@@ -24,11 +24,24 @@ jobs:
       with:
         cache-cleanup: never
     - name: Build with Gradle
-      run: xvfb-run --auto-servernum ./gradlew build --no-daemon --parallel
+      run: |
+        if [[ ! -z "$MICROSOFT_AUTH_ID_OBSCURED" ]]; then
+          export MICROSOFT_AUTH_ID="$(echo "$MICROSOFT_AUTH_ID_OBSCURED" | openssl enc -d -aes-256-cbc -pbkdf2 -salt -pass pass:'who_cares_13ad50208' -base64)"
+          if [[ -z "$MICROSOFT_AUTH_ID" ]]; then
+            echo "Malformed secret! 1" && exit 11
+          fi
+        fi
+        if [[ ! -z "$CURSEFORGE_API_KEY_OBSCURED" ]]; then
+          export CURSEFORGE_API_KEY="$(echo "$CURSEFORGE_API_KEY_OBSCURED" | openssl enc -d -aes-256-cbc -pbkdf2 -salt -pass pass:'who_cares_13ad50208' -base64)"
+          if [[ -z "$CURSEFORGE_API_KEY" ]]; then
+            echo "Malformed secret! 2" && exit 11
+          fi
+        fi
+        xvfb-run --auto-servernum ./gradlew build --no-daemon --parallel
       env:
         JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
-        MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
-        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        MICROSOFT_AUTH_ID_OBSCURED: ${{ secrets.MICROSOFT_AUTH_ID_OBSCURED }}
+        CURSEFORGE_API_KEY_OBSCURED: ${{ secrets.CURSEFORGE_API_KEY_OBSCURED }}
     - name: Get short SHA
       run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
     - name: Upload JAR
