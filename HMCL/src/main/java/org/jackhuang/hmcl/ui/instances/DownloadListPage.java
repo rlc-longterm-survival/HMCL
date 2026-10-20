@@ -628,7 +628,7 @@ public class DownloadListPage extends Control implements DecoratorPage {
                 });
             }
 
-            if (RegionUtils.isIsChinaMainlandNetwork()) {
+            if (RegionUtils.isIsChinaMainlandNetwork() && false) {
                 BorderPane wrapper = new BorderPane();
 
                 HintPane hint = new HintPane(MessageDialogPane.MessageType.WARNING);

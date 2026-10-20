@@ -453,7 +453,7 @@ public final class VersionsPage extends Control implements WizardPage, Refreshab
                 root.setCenter(transitionPane);
             }
 
-            if (RegionUtils.isIsChinaMainlandNetwork()) {
+            if (RegionUtils.isIsChinaMainlandNetwork() && false) {
                 BorderPane wrapper = new BorderPane();
 
                 HintPane hint = new HintPane(MessageDialogPane.MessageType.WARNING);
